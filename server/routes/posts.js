@@ -7,6 +7,8 @@ import {
   likePost,
   commentOnPost,
   getUserPosts,
+  deletePost,
+  deleteComment,
 } from '../controllers/postController.js';
 
 const router = express.Router();
@@ -23,5 +25,11 @@ router.route('/:id/like')
 
 router.route('/:id/comment')
   .post(protect, commentOnPost);
+
+router.route('/:id')
+  .delete(protect, deletePost);
+
+router.route('/:postId/comments/:commentId')
+  .delete(protect, deleteComment);
 
 export default router; 

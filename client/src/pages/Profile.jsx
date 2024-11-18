@@ -117,6 +117,13 @@ export default function Profile() {
     ));
   };
 
+  const handlePostDelete = async (postId) => {
+    setUserPosts(userPosts.filter(post => post._id !== postId));
+    await fetchUserPosts();
+  };
+
+  const isFollowing = profile?.followers.some(follower => follower._id === user._id);
+
   if (!profile) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -186,18 +193,20 @@ export default function Profile() {
               ) : (
                 <button
                   onClick={handleFollow}
-                  className={`btn-primary flex items-center space-x-2 ${
-                    profile.followers.includes(user._id) ? 'bg-gray-500' : ''
-                  }`}
+                  className={`flex items-center space-x-2 px-6 py-2 rounded-full font-medium transition-all duration-200 ${
+                    isFollowing 
+                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400'
+                      : 'bg-primary-light dark:bg-primary-dark text-white hover:opacity-90'
+                  } transform hover:scale-105 shadow-md`}
                 >
-                  {profile.followers.includes(user._id) ? (
+                  {isFollowing ? (
                     <>
-                      <FaUserCheck />
-                      <span>Following</span>
+                      <FaUserCheck className="w-5 h-5" />
+                      <span>Unfollow</span>
                     </>
                   ) : (
                     <>
-                      <FaUserPlus />
+                      <FaUserPlus className="w-5 h-5" />
                       <span>Follow</span>
                     </>
                   )}
@@ -268,6 +277,7 @@ export default function Profile() {
                   key={post._id}
                   post={post}
                   onPostUpdate={handlePostUpdate}
+                  onPostDelete={handlePostDelete}
                 />
               ))}
             </div>

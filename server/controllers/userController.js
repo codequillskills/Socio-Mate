@@ -11,7 +11,12 @@ export const getProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json(user);
+    const userObject = user.toObject();
+    if (userObject.profilePicture) {
+      userObject.profilePicture = `http://localhost:5000${userObject.profilePicture}`;
+    }
+
+    res.json(userObject);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -27,19 +32,23 @@ export const updateProfile = async (req, res) => {
       user.bio = bio || user.bio;
       
       if (req.file) {
-        user.profilePicture = `/uploads/${req.file.filename}`;
+        const profilePicturePath = `/uploads/${req.file.filename}`;
+        user.profilePicture = profilePicturePath;
       }
       
       const updatedUser = await user.save();
-      res.json({
+      
+      const responseUser = {
         _id: updatedUser._id,
         username: updatedUser.username,
         email: updatedUser.email,
         bio: updatedUser.bio,
-        profilePicture: updatedUser.profilePicture,
+        profilePicture: updatedUser.profilePicture ? `http://localhost:5000${updatedUser.profilePicture}` : null,
         followers: updatedUser.followers,
         following: updatedUser.following,
-      });
+      };
+
+      res.json(responseUser);
     } else {
       res.status(404).json({ message: 'User not found' });
     }
@@ -75,7 +84,12 @@ export const followUser = async (req, res) => {
       .populate('followers', 'username profilePicture')
       .populate('following', 'username profilePicture');
 
-    res.json(updatedUserToFollow);
+    const responseUser = updatedUserToFollow.toObject();
+    if (responseUser.profilePicture) {
+      responseUser.profilePicture = `http://localhost:5000${responseUser.profilePicture}`;
+    }
+
+    res.json(responseUser);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

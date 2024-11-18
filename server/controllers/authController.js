@@ -26,6 +26,7 @@ export const register = async (req, res) => {
       _id: user._id,
       username: user.username,
       email: user.email,
+      profilePicture: user.profilePicture ? `http://localhost:5000${user.profilePicture}` : null,
       token: generateToken(user._id),
     });
   } catch (error) {
@@ -43,6 +44,7 @@ export const login = async (req, res) => {
         _id: user._id,
         username: user.username,
         email: user.email,
+        profilePicture: user.profilePicture ? `http://localhost:5000${user.profilePicture}` : null,
         token: generateToken(user._id),
       });
     } else {

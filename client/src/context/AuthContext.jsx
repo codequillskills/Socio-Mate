@@ -10,10 +10,22 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      if (parsedUser.profilePicture && !parsedUser.profilePicture.startsWith('http')) {
+        parsedUser.profilePicture = `http://localhost:5000${parsedUser.profilePicture}`;
+      }
+      setUser(parsedUser);
     }
     setLoading(false);
   }, []);
+
+  const updateUserData = (userData) => {
+    if (userData.profilePicture && !userData.profilePicture.startsWith('http')) {
+      userData.profilePicture = `http://localhost:5000${userData.profilePicture}`;
+    }
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  };
 
   const login = async (email, password) => {
     try {
@@ -21,8 +33,7 @@ export function AuthProvider({ children }) {
         email,
         password,
       });
-      setUser(data);
-      localStorage.setItem('user', JSON.stringify(data));
+      updateUserData(data);
       return { success: true };
     } catch (error) {
       return {
@@ -39,8 +50,7 @@ export function AuthProvider({ children }) {
         email,
         password,
       });
-      setUser(data);
-      localStorage.setItem('user', JSON.stringify(data));
+      updateUserData(data);
       return { success: true };
     } catch (error) {
       return {
@@ -56,7 +66,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, updateUserData }}>
       {children}
     </AuthContext.Provider>
   );
