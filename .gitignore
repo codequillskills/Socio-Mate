@@ -1,5 +1,6 @@
+.gitignore
 node_modules
 .env
-uploads/
+.env.local
 Perform_mate.zip
 ref/
